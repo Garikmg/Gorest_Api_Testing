@@ -8,16 +8,24 @@ describe('gorest API Testing', () => {
       cy.prepareData(name, email)
   })
   
-  it('Create user', function () {
-    cy.createUser(this.responseData)
-  })
+  it('API tests', function () {
+    cy.createUser(this.responseData).then((response) => {
+      expect(response.status).to.eq(201)
+      expect(response.body.name).to.eq(name)
+      expect(response.body.email).to.eq(email)
+    
+      const id = response.body.id 
 
-  it('Retrieve user', function () {
-    cy.log(this.responseData)
-    cy.retrieveUser(this.responseData, this.id)
-  })
+    cy.retrieveUser(this.responseData, id).then((response) => {
+      expect(response.status).to.eq(200)
+      expect(response.body.id).to.eq(id)
+      expect(response.body.name).to.eq(name)
+      expect(response.body.email).to.eq(email)
+  });
 
-  it('Delete user', function () {
-    cy.deleteUser(this.responseData, this.id)
+  cy.deleteUser(id).then((response) => {
+    expect(response.status).to.eq(204)
+  })
+  });
   })
 })
